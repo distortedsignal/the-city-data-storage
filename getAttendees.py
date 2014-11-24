@@ -7,7 +7,7 @@ import base64
 import json
 
 # Set up Auth for The City
-# Get secret key from file
+# Get secret key and user token from file
 conf = open('auth.conf', 'r', encoding='utf-8')
 confStruct = ast.literal_eval(conf.read())
 
@@ -30,7 +30,9 @@ headers = {
 	"X-City-Time": now
 }
 
-a = urllib.request.urlopen(url, json.dumps(headers)).read()
+print(json.dumps(headers).encode('utf-8'))
+
+a = urllib.request.urlopen(url, json.dumps(headers).encode('utf-8')).read()
 
 
 
