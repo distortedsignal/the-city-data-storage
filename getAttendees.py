@@ -1,10 +1,11 @@
 import ast
-import urllib.parse, urllib.request
+import urllib.parse, urllib.request, urllib.error
 import time
 import hmac
 import hashlib
 import base64
 import json
+import sys
 
 # Set up Auth for The City
 # Get secret key and user token from file
@@ -19,7 +20,7 @@ url = 'https://api.onthecity.org/users'
 string_to_sign = str(now) + verb + url
 
 unencoded_hmac = urllib.parse.quote(hmac.new(confStruct['secret-key'].encode('utf-8'),
-	string_to_sign.encode('utf-8'), hashlib.sha256).digest())
+	string_to_sign.encode('utf-8'), hashlib.sha256).hexdigest())
 
 encoded_hmac = base64.b64encode(unencoded_hmac.encode('utf-8')).strip()
 
@@ -30,9 +31,15 @@ headers = {
 	"X-City-Time": now
 }
 
-print(json.dumps(headers).encode('utf-8'))
+try:
+	a = urllib.request.urlopen(url, json.dumps(headers).encode('utf-8')).read()
+except urllib.error.HTTPError as e:
+	print(
+		"Code:", e.code,
+		"\nReason:", e.reason,
+		"\nHeaders:", e.headers)
+	sys.exit(1)
 
-a = urllib.request.urlopen(url, json.dumps(headers).encode('utf-8')).read()
 
 
 
