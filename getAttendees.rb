@@ -52,13 +52,16 @@ def get_user_page(page)
 	return http.request(request)
 end
 
+# Get the first page of user results
 response = get_user_page(1)
+# Get the page into a format we can work with
 response_body = JSON.parse(response.body())
+# Find out how many pages there are
 pages = response_body['total_pages']
 
 # For each page in the database
 (1..pages).each do |page_num|
-	# Get a page by number
+	# Get a page by page number
 	page = get_user_page(page_num)
 	# Get the page body in a way that we can use it
 	page_body = JSON.parse(page.body())
