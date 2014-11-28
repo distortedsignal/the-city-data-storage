@@ -41,7 +41,7 @@ def get_user_page(page)
 	headers['X-City-Sig'] = hmac_signature
 	headers['X-City-User-Token'] = auth_dict['user-token']
 	headers['Accept'] = 'application/vnd.thecity.admin.v1+json' # This is required by the API
-	headers['X-City-Time'] = unix_time.to_s
+	headers['X-City-Time'] = unix_time.to_s # Apparently Ruby doesn't like serializing ints to JSON
 
 	uri = URI(full_url)
 	http = Net::HTTP.new(uri.host, uri.port)
