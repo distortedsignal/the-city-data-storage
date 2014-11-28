@@ -7,7 +7,6 @@ create table users (
     secondary_phone varchar(24),
     last_engaged datetime,
     title varchar(128),
-    internal_url varchar(256),
     id integer,
     first  varchar(64),
     primary_campus_name varchar(64),
