@@ -40,11 +40,10 @@ def get_user_page(page)
 	headers = {}
 	headers['X-City-Sig'] = hmac_signature
 	headers['X-City-User-Token'] = auth_dict['user-token']
-	headers['Accept'] = 'application/vnd.thecity.admin.v1+json'
+	headers['Accept'] = 'application/vnd.thecity.admin.v1+json' # This is required by the API
 	headers['X-City-Time'] = unix_time.to_s
-	headers['Content-Type'] = 'application/json'
 
-	uri = URI("#{full_url}")
+	uri = URI(full_url)
 	http = Net::HTTP.new(uri.host, uri.port)
 	http.use_ssl = true
 	http.verify_mode = OpenSSL::SSL::VERIFY_NONE #TODO This.
