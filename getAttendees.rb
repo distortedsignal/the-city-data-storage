@@ -97,9 +97,3 @@ CSV.open('users.csv', 'wb') do |csv|
 		end
 	end
 end
-
-
-
-
-
-
