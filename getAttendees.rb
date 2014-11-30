@@ -5,6 +5,23 @@ require 'base64'
 require 'net/http'
 require 'net/https'
 require 'time'
+require 'csv'
+
+def safe_get_item(item)
+	if item == nil then
+		return ""
+	end
+
+	return item
+end
+
+def get_user_array(user, user_attributes)
+	user_arr = []
+	user_attributes.each do |attribute|
+		user_arr.push(safe_get_item(user[attribute]))
+	end
+	return user_arr
+end
 
 def get_user_url(page)
 	url_base = "https://api.onthecity.org"
@@ -15,7 +32,7 @@ def get_user_url(page)
 end
 
 def get_string_to_sign(unix_time, http_verb, full_url)
-	return "#{unix_time}#{http_verb}#{full_url}"
+	return unix_time.to_s + http_verb + full_url
 end
 
 def sign_string(secret_key, string_to_sign)
@@ -57,16 +74,27 @@ response = get_user_page(1)
 response_body = JSON.parse(response.body())
 # Find out how many pages there are
 pages = response_body['total_pages']
+# Set attributes that we expect from users
+user_attributes = ["admin_url", "api_url", "internal_url", "updated_at", "last_logged_in", "secondary_phone", 
+	"last_engaged", "title", "id", "first", "primary_campus_name", "last", "head_of_household", "nickname", "active", 
+	"primary_phone_type", "primary_phone", "member_since", "birthdate", "email_bouncing", "secondary_phone_type", 
+	"primary_campus_id", "contact_updated_at", "type", "staff", "created_at", "gender", "external_id_1", 
+	"external_id_2", "external_id_3", "external_chms_id", "middle", "email"]
 
-# For each page in the database
-(1..pages).each do |page_num|
-	# Get a page by page number
-	page = get_user_page(page_num)
-	# Get the page body in a way that we can use it
-	page_body = JSON.parse(page.body())
-	# Get the user list
-	page_body['users'].each do |user|
-		puts user
+# Open the CSV and...
+CSV.open('users.csv', 'wb') do |csv|
+	# Write the user attributes as a header to the CSV
+	csv << user_attributes
+	# For each page in the database...
+	(1..pages).each do |page_num|
+		# Get a page by page number
+		page = get_user_page(page_num)
+		# Get the page body in a way that we can use it
+		page_body = JSON.parse(page.body())
+		# Get the user list
+		page_body['users'].each do |user|
+			csv << get_user_array(user, user_attributes)
+		end
 	end
 end
 
